@@ -3,6 +3,7 @@ using System.Collections.Generic;
 public class PromptGenerator
 {
     public List<Prompt> _prompts = new List<Prompt>();
+    string promptfilename = "Custom_Prompts.txt";
 
     public void base_Prompts(){
         Prompt Prompt1 = new Prompt();
@@ -31,6 +32,23 @@ public class PromptGenerator
         _prompts.Add(Prompt4);
         _prompts.Add(Prompt5);
 
+        if (File.Exists(promptfilename) ) 
+        {
+            string[] lines = System.IO.File.ReadAllLines(promptfilename);
+            
+            foreach (string line in lines)
+            {
+                string[] parts = line.Split(";");
+
+                Prompt prompt = new Prompt();
+                prompt._Category = parts[0];
+                prompt._Question = parts[1];
+                
+                _prompts.Add(prompt);
+                
+            }
+        }
+
     }
     public Prompt GetRandomPrompt()
     {
@@ -38,6 +56,27 @@ public class PromptGenerator
         int index = random.Next(_prompts.Count);        
         Prompt random_prompt = _prompts[index];
         return random_prompt;
+    }
+
+    public void AddPrompt(Prompt prompt)
+    {
+        _prompts.Add(prompt);
+
+        if (File.Exists(promptfilename) ) 
+        {
+            using (StreamWriter stream = File.AppendText(promptfilename))
+            {
+                stream.WriteLine($"{prompt._Category};{prompt._Question}");
+            }
+
+        } else {
+            using (StreamWriter outputFile = new StreamWriter("Custom_Prompts.txt"))
+            {
+                outputFile.WriteLine($"{prompt._Category};{prompt._Question}");
+            }  
+        }
+
+    
     }
 
     
